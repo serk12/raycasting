@@ -27,12 +27,12 @@ bool compare(const boost::filesystem::path& a,
 
 }  // namespace
 
-bool ReadFromDicom(const std::string& path, Volume* vol) {
+int ReadFromDicom(const std::string& path, Volume* vol) {
   const boost::filesystem::path kDir = boost::filesystem::path(path);
 
   if (!boost::filesystem::exists(kDir) ||
       !boost::filesystem::is_directory(kDir))
-    return false;
+    return -1;
   vol->histogram_.clear();
   vol->histogram_.resize(256, 0);
 
@@ -50,13 +50,13 @@ bool ReadFromDicom(const std::string& path, Volume* vol) {
 
       QImage img(QString::fromStdString(file_path.string()));
 
-      if (img.isNull()) return false;
+      if (img.isNull()) return -1;
 
       if (vol->depth_ == 0) {
         vol->width_ = img.width();
         vol->height_ = img.height();
       } else if (vol->width_ != img.width() || vol->height_ != img.height()) {
-        return false;
+        return -1;
       }
 
       vol->depth_++;
@@ -102,7 +102,7 @@ bool ReadFromDicom(const std::string& path, Volume* vol) {
   std::cout << "Volume loaded, 3D texture built: " << vol->width_ << " x "
             << vol->height_ << " x " << vol->depth_ << std::endl;
 
-  return true;
+  return vol->depth_;
 }
 
 }  // namespace data_representation

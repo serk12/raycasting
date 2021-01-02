@@ -43,6 +43,7 @@ bool ReadFile(const std::string filename, std::string *shader_source) {
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(parent), initialized_(false), width_(0.0), height_(0.0) {
   setFocusPolicy(Qt::StrongFocus);
+  qttyText = 0;
 }
 
 GLWidget::~GLWidget() {}
@@ -50,12 +51,10 @@ GLWidget::~GLWidget() {}
 bool GLWidget::LoadVolume(const QString &path) {
   std::unique_ptr<data_representation::Volume> vol =
       std::make_unique<data_representation::Volume>();
-
-  if (data_representation::ReadFromDicom(path.toUtf8().constData(),
-                                         vol.get())) {
+  qttyText = data_representation::ReadFromDicom(path.toUtf8().constData(), vol.get());
+  if (qttyText > -1) {
     vol_.reset(vol.release());
     camera_.UpdateModel(cube_->min_, cube_->max_);
-
     return true;
   }
 
@@ -191,12 +190,21 @@ void GLWidget::paintGL() {
     }
 
     GLuint color = program_->uniformLocation("color");
-    glUniform4fv(color, 1, GL_FALSE);
+    glUniform4fv(color, plot->getSize(), glm::value_ptr(plot->getData()[0]));
 
+    GLuint size = program_->uniformLocation("size");
+    glUniform1i(size, plot->getSize());
 
+    GLuint loc_qttyText = program_->uniformLocation("qttyText");
+    glUniform1i(loc_qttyText, qttyText);
 
     cube_->Render();
 
     glDisable(GL_BLEND);
   }
+}
+
+void GLWidget::setPlotRGBA(PlotsRGBA *plot)
+{
+    this->plot = plot;
 }

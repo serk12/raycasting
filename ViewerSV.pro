@@ -29,7 +29,8 @@ SOURCES += \
     glwidget.cc \
     main.cc \
     main_window.cc \
-    plotrgb.cpp \
+    plotsrgba.cpp \
+    plotx.cpp \
     volume.cc \
     volume_io.cc
 
@@ -38,7 +39,8 @@ HEADERS  += \
     cube.h \
     glwidget.h \
     main_window.h \
-    plotrgb.h \
+    plotsrgba.h \
+    plotx.h \
     volume.h \
     volume_io.h \
 

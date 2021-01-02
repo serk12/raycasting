@@ -17,7 +17,7 @@ namespace data_representation {
  * @param vol The resulting volumetric representation.
  * @return Whether it was able to read the file.
  */
-bool ReadFromDicom(const std::string &filename, Volume *vol);
+int ReadFromDicom(const std::string &filename, Volume *vol);
 
 }  // namespace data_representation
 

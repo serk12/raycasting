@@ -9,12 +9,14 @@
 
 enum RGBaType {Red, Green, Blue, Alpha};
 
-class PlotRGB : public QwtPlot
+class PlotX : public QwtPlot
 {
 public:
-    PlotRGB();
-    PlotRGB(const RGBaType type);
+    PlotX();
+    PlotX(const RGBaType type);
     void getData(glm::vec4* colors);
+
+    int getSize() const;
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

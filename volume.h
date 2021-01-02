@@ -37,7 +37,7 @@ class Volume {
    */
   GLuint GetTextureId();
 
-  friend bool ReadFromDicom(const std::string& path, Volume* vol);
+  friend int ReadFromDicom(const std::string& path, Volume* vol);
 
  public:
   std::vector<double> histogram_;

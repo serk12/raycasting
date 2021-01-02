@@ -1,6 +1,6 @@
 #version 330
 
-uniform float qttyText = 361.0f;
+uniform int qttyText;
 uniform float cubeSize = 1.733f; // sqrt(1+sqrt(1+1)^2) ~ 1.733f
 uniform float resolution = 2.0f;
 
@@ -10,9 +10,6 @@ uniform vec3 colFocus = vec3(0.3f, 0.3f, 0.3f);
 uniform vec3 llumAmbient = vec3(1.0f, 1.0f, 1.0f);
 uniform vec3 colorBG = vec3(1.0f);
 
-uniform vec3 fmatamb  = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3 fmatdiff = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3 fmatspec = vec3(1.0f, 1.0f, 1.0f);
 uniform float fmatshin = 0.0f;
 
 smooth in vec3 init_coords;
@@ -23,23 +20,31 @@ smooth in vec3 cam_pos;
 uniform sampler3D volume;
 out vec4 frag_color;
 
+uniform int size;
+uniform vec4[11] color;
+
+vec4 alphaToColor(float a) {
+    int i = (int(a * 100) * size) / 100;
+    return color[i] / 100.0f;
+}
+
 bool insideCube(vec3 coords) {
     return (coords.x <= 0.5f && coords.x >= -0.5f) &&
            (coords.y <= 0.5f && coords.y >= -0.5f) &&
            (coords.z <= 0.5f && coords.z >= -0.5f);
 }
 
-vec3 Lambert(vec3 NormSCO, vec3 L)
+vec3 Lambert(vec3 NormSCO, vec3 L, vec3 color)
 {
-    vec3 colRes = llumAmbient * fmatamb;
+    vec3 colRes = llumAmbient * color;
     if (dot (L, NormSCO) > 0.0f)
-      colRes = colRes + colFocus * fmatdiff * dot (L, NormSCO);
+      colRes = colRes + colFocus * color * dot (L, NormSCO);
     return (colRes);
 }
 
-vec3 Phong(vec3 vert_norm, vec3 L, vec4 vert_pos)
+vec3 Phong(vec3 vert_norm, vec3 L, vec4 vert_pos, vec3 color)
 {
-    vec3 colRes = Lambert (vert_norm, L);
+    vec3 colRes = Lambert (vert_norm, L, color);
     if (dot(vert_norm,L) < 0.0f)
         return colRes;
 
@@ -49,10 +54,10 @@ vec3 Phong(vec3 vert_norm, vec3 L, vec4 vert_pos)
     if ((dot(R, V) < 0.0f) || (fmatshin == 0.0f))
         return colRes;
     float shine = pow(max(0.0, dot(R, V)), fmatshin);
-    return (colRes + fmatspec * colFocus * shine);
+    return (colRes + color * colFocus * shine);
 }
 
-vec3 RCPhong(vec3 coords, vec3 deltaDir) {
+vec3 RCPhong(vec3 coords, vec3 deltaDir, vec3 color) {
     vec3 ini = coords + deltaDir + vec3(0.5f);
     vec3 end = coords - deltaDir + vec3(0.5f);
     vec3 mid = coords + vec3(0.5f);
@@ -61,7 +66,7 @@ vec3 RCPhong(vec3 coords, vec3 deltaDir) {
     float denZ = (texture3D(volume, vec3(mid.x, mid.y, ini.z)).x - texture3D(volume, vec3(mid.x, mid.y, end.z)).x) / 2.0f;
     vec3 N = vec3(denX, denY, denZ);
     vec3 L = normalize(cam_pos - coords);
-    return Phong(N, L, pos);
+    return Phong(N, L, pos, color);
 }
 
 void main (void) {
@@ -70,7 +75,7 @@ void main (void) {
         discard;
     }
 
-    float stepSize = (cubeSize/qttyText)/resolution;
+    float stepSize = (cubeSize/float(qttyText))/resolution;
     float powSize = cubeSize;
 
     vec3 deltaDir = dir * stepSize;
@@ -80,11 +85,14 @@ void main (void) {
 
 
     for(int i = 0; i <= max_iterations; ++i) {
-        float alpha = texture3D(volume, coords + vec3(0.5f)).x;
+        float alpha_original = texture3D(volume, coords + vec3(0.5f)).x;
+        vec4 color_source = alphaToColor(alpha_original);
+        float alpha = alpha_original * color_source.a;
+        vec3 color = color_source.rgb;
         if (alpha > 0.0f) {
             alpha = 1.0f - pow(1.0f - alpha, powSize);
             alphaAcum = alphaAcum + (1.0f - alphaAcum) * alpha;
-            vec3 color = RCPhong(coords, deltaDir);
+            color = RCPhong(coords, deltaDir, color);
             colorAcum = colorAcum + (1.0 - alphaAcum) * color * alpha;
             if (alphaAcum >= 1.0f) {
                 alphaAcum = 1.0f;

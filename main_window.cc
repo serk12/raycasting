@@ -6,7 +6,6 @@
 #include <QMessageBox>
 #include <QLabel>
 
-#include "plotrgb.h"
 #include "./ui_main_window.h"
 
 namespace gui {
@@ -14,17 +13,8 @@ namespace gui {
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui_(new Ui::MainWindow) {
     ui_->setupUi(this);
-    PlotRGB* r = new PlotRGB(RGBaType::Red);
-    ui_->Configuration->addWidget(r);
-
-    PlotRGB* g = new PlotRGB(RGBaType::Green);
-    ui_->Configuration->addWidget(g);
-
-    PlotRGB* b = new PlotRGB(RGBaType::Blue);
-    ui_->Configuration->addWidget(b);
-
-    PlotRGB* a = new PlotRGB(RGBaType::Alpha);
-    ui_->Configuration->addWidget(a);
+    PlotsRGBA* a = new PlotsRGBA(*ui_->Configuration);
+    ui_->glwidget->setPlotRGBA(a);
 }
 
 MainWindow::~MainWindow() { delete ui_; }

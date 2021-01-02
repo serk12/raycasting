@@ -4,6 +4,7 @@
 #define MAIN_WINDOW_H_
 
 #include <QMainWindow>
+#include "plotsrgba.h"
 
 namespace Ui {
 class MainWindow;

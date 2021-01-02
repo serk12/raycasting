@@ -10,10 +10,13 @@
 #include <QString>
 
 #include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "./camera.h"
 #include "./cube.h"
 #include "./volume.h"
+#include "plotsrgba.h"
 
 class GLWidget : public QGLWidget {
   Q_OBJECT
@@ -28,6 +31,7 @@ class GLWidget : public QGLWidget {
    * @return Whether it was able to load the volume.
    */
   bool LoadVolume(const QString &filename);
+  void setPlotRGBA(PlotsRGBA *plot);
 
  protected:
   /**
@@ -49,6 +53,8 @@ class GLWidget : public QGLWidget {
   void keyPressEvent(QKeyEvent *event);
 
  private:
+  PlotsRGBA *plot;
+  int qttyText;
   /**
    * @brief program_ A basic shader program.
    */
