@@ -11,6 +11,7 @@ public:
     PlotsRGBA(QVBoxLayout& layer);
     glm::vec4* getData();
     int getSize() const;
+    void setReference(const std::vector<double>& ref);
 private:
     PlotX *r, *g, *b, *a;
     glm::vec4* data;

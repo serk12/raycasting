@@ -37,6 +37,14 @@ int PlotsRGBA::getSize() const
     return r->getSize();
 }
 
+void PlotsRGBA::setReference(const std::vector<double> &ref) {
+    QVector<double> aux(ref.begin(), ref.end());
+    r->setReference(aux);
+    g->setReference(aux);
+    b->setReference(aux);
+    a->setReference(aux);
+}
+
 void PlotsRGBA::updates()
 {
     emit updateFather();

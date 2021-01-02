@@ -56,6 +56,7 @@ bool GLWidget::LoadVolume(const QString &path) {
   if (qttyText > -1) {
     vol_.reset(vol.release());
     camera_.UpdateModel(cube_->min_, cube_->max_);
+    this->plot->setReference(vol_->histogram_);
     return true;
   }
 

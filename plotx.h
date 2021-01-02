@@ -19,12 +19,12 @@ public:
     void getData(glm::vec4* colors);
 
     int getSize() const;
-
+    void setReference(const QVector<double>& ref);
 protected:
     void mousePressEvent(QMouseEvent* event) override;
 private:
     RGBaType type;
-    QwtPlotCurve* curve;
+    QwtPlotCurve *curve, *reference;
     inline static const int resolution = 100;
     inline static const int step = 10;
 

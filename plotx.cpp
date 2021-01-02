@@ -31,7 +31,7 @@ PlotX::PlotX(const RGBaType type) : QwtPlot()
     this->setAxisMaxMajor(Axis::xBottom, 4);
     this->setAxisScale(Axis::xBottom, 0.0, PlotX::resolution, 25);
     this->setAxisAutoScale(Axis::xBottom, false);
-    curve = new QwtPlotCurve;
+
     y = QVector<double>(PlotX::resolution / PlotX::step + 1);
     x = QVector<double>(PlotX::resolution / PlotX::step + 1, defValue);
     for (int i = 0; i <= PlotX::resolution / PlotX::step; ++i) {
@@ -40,11 +40,50 @@ PlotX::PlotX(const RGBaType type) : QwtPlot()
     for (int i = 0; i < setZero*getSize() / 100; ++i) {
         x[i] = 0;
     }
+    curve = new QwtPlotCurve;
     curve->setSamples(y, x);
     curve->attach(this);
+
     this->replot();
 }
 
+void PlotX::setReference(const QVector<double>& ref)
+{
+    reference = new QwtPlotCurve;
+    QVector<double> ref_y = QVector<double>(ref.size());
+    double max = 0, max2 = 0;
+    for (int i = 0; i < ref.size(); ++i) {
+        ref_y[i] = (i*100)/(ref.size()-1);
+        if (ref[i] > max) max = ref[i];
+        if (ref[i] > max2 && ref[i] < max) max2 = ref[i];
+    }
+    QVector<double> ref_x(ref.size());
+    if (max2*20 < max) max = max2;
+    for (int i = 0; i < ref.size(); ++i) {
+        ref_x[i] = (ref[i]*100)/max;
+    }
+    reference->setSamples(ref_y, ref_x);
+    reference->attach(this);
+    QBrush b;
+    b.setStyle(Qt::SolidPattern);
+    switch (type) {
+    case RGBaType::Red:
+        b.setColor(QColor(255,0,0,64));
+        break;
+    case RGBaType::Green:
+        b.setColor(QColor(0,255,0,64));
+        break;
+    case RGBaType::Blue:
+        b.setColor(QColor(0,0,255,64));
+        break;
+    case RGBaType::Alpha:
+        b.setColor(QColor(64,64,64,64));
+        break;
+    }
+    reference->setBrush(b);
+
+    this->replot();
+}
 void PlotX::getData(glm::vec4* colors)
 {
     for (int i = 0; i < getSize(); ++i) {
