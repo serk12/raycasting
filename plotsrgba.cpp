@@ -1,18 +1,22 @@
 #include "plotsrgba.h"
 
-PlotsRGBA::PlotsRGBA(QVBoxLayout& layer)
+PlotsRGBA::PlotsRGBA(QVBoxLayout& layer) : QObject()
 {
     r = new PlotX(RGBaType::Red);
     layer.addWidget(r);
+    connect(r, SIGNAL(updateFather()), this, SLOT(updates()));
 
     g = new PlotX(RGBaType::Green);
     layer.addWidget(g);
+    connect(g, SIGNAL(updateFather()), this, SLOT(updates()));
 
     b = new PlotX(RGBaType::Blue);
     layer.addWidget(b);
+    connect(b, SIGNAL(updateFather()), this, SLOT(updates()));
 
     a = new PlotX(RGBaType::Alpha);
     layer.addWidget(a);
+    connect(a, SIGNAL(updateFather()), this, SLOT(updates()));
 }
 
 glm::vec4* PlotsRGBA::getData()
@@ -31,4 +35,9 @@ glm::vec4* PlotsRGBA::getData()
 int PlotsRGBA::getSize() const
 {
     return r->getSize();
+}
+
+void PlotsRGBA::updates()
+{
+    emit updateFather();
 }

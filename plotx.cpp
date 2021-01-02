@@ -3,7 +3,7 @@
 PlotX::PlotX() : PlotX(Alpha) {}
 
 
-PlotX::PlotX(const RGBaType type)
+PlotX::PlotX(const RGBaType type) : QwtPlot()
 {
     this->setMaximumSize(200, 200);
     this->type = type;
@@ -79,6 +79,7 @@ void PlotX::mousePressEvent(QMouseEvent* event) {
     x[_y] = _x;
     curve->setSamples(y, x);
     this->replot();
+    emit updateFather();
 }
 
 int PlotX::getSize() const

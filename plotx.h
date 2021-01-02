@@ -5,12 +5,14 @@
 #include <qwt/qwt_plot_curve.h>
 #include <glm/vec4.hpp>
 #include <QMouseEvent>
+
 #include <iostream>
 
 enum RGBaType {Red, Green, Blue, Alpha};
 
 class PlotX : public QwtPlot
 {
+    Q_OBJECT
 public:
     PlotX();
     PlotX(const RGBaType type);
@@ -27,6 +29,8 @@ private:
     inline static const int step = 10;
 
     QVector<double> y, x;
+signals:
+    void updateFather();
 };
 
 #endif // PLOTRGB_H

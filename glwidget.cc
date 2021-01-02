@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <QObject>
 
 #include "./volume.h"
 #include "./volume_io.h"
@@ -207,4 +208,5 @@ void GLWidget::paintGL() {
 void GLWidget::setPlotRGBA(PlotsRGBA *plot)
 {
     this->plot = plot;
+    connect(plot, SIGNAL(updateFather()), this, SLOT(updateGL()));
 }
