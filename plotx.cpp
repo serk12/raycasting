@@ -21,7 +21,7 @@ PlotX::PlotX(const RGBaType type) : QwtPlot()
         break;
     case RGBaType::Alpha:
         defValue = 100;
-        setZero = 30;
+        setZero = 15;
         this->setTitle("Alpha");
         break;
     }
@@ -60,7 +60,9 @@ void PlotX::setReference(const QVector<double>& ref)
     QVector<double> ref_x(ref.size());
     if (max2*20 < max) max = max2;
     for (int i = 0; i < ref.size(); ++i) {
-        ref_x[i] = (ref[i]*100)/max;
+        double aux = (ref[i]*100)/max;
+        aux = aux > 100.0f? 100.0f : (aux < 0.0f? 0.0f : aux);
+        ref_x[i] = aux;
     }
     reference->setSamples(ref_y, ref_x);
     reference->attach(this);

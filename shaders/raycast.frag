@@ -6,11 +6,11 @@ uniform float resolution = 2.0f;
 
 uniform int max_iterations = 1500;
 
-uniform vec3 colFocus = vec3(0.3f, 0.3f, 0.3f);
+uniform vec3 colFocus = vec3(0.6f, 0.6f, 0.6f);
 uniform vec3 llumAmbient = vec3(1.0f, 1.0f, 1.0f);
 uniform vec3 colorBG = vec3(1.0f);
 
-uniform float fmatshin = 0.0f;
+uniform float fmatshin = 50.0f;
 
 smooth in vec3 init_coords;
 smooth in vec3 dir;
@@ -24,8 +24,19 @@ uniform int size;
 uniform vec4[11] color;
 
 vec4 alphaToColor(float a) {
-    int i = (int(a * 100) * size) / 100;
-    return color[i] / 100.0f;
+    a *=  100;
+    float aux = floor(a);
+    int i = int((aux * size) / 100);
+    float b = aux - a;
+    float c = 1.0f - b;
+    vec4 result;
+    if (i == (size - 1)) {
+        result = color[i] / 100.0f;
+    }
+    else {
+        result = (color[i]*b + color[i+1]*c) / 100.0f;
+    }
+    return clamp(result, 0.0f, 1.0f);
 }
 
 bool insideCube(vec3 coords) {
@@ -92,8 +103,10 @@ void main (void) {
         if (alpha > 0.0f) {
             alpha = 1.0f - pow(1.0f - alpha, powSize);
             alphaAcum = alphaAcum + (1.0f - alphaAcum) * alpha;
-            color = RCPhong(coords, deltaDir, color);
-            colorAcum = colorAcum + (1.0 - alphaAcum) * color * alpha;
+            //alphaAcum = alpha + (1.0f - alpha) * alphaAcum;
+            color = RCPhong(coords, deltaDir, color) * alpha;
+            colorAcum = colorAcum + (1.0 - alphaAcum) * color;
+            //colorAcum = color + (1.0f - color) * colorAcum;
             if (alphaAcum >= 1.0f) {
                 alphaAcum = 1.0f;
                 break;
