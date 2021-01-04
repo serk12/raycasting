@@ -36,7 +36,9 @@ vec4 alphaToColor(float a) {
     else {
         result = (color[i]*b + color[i+1]*c) / 100.0f;
     }
-    return clamp(result, 0.0f, 1.0f);
+    result = clamp(result, 0.0f, 1.0f);
+    result.a *= 0.5f;
+    return result;
 }
 
 bool insideCube(vec3 coords) {
@@ -109,6 +111,7 @@ void main (void) {
             //colorAcum = color + (1.0f - color) * colorAcum;
             if (alphaAcum >= 1.0f) {
                 alphaAcum = 1.0f;
+                colorAcum = clamp(colorAcum, 0.0f, 1.0f);
                 break;
             }
         }
