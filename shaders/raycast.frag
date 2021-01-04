@@ -107,7 +107,7 @@ void main (void) {
             alphaAcum = alphaAcum + (1.0f - alphaAcum) * alpha;
             //alphaAcum = alpha + (1.0f - alpha) * alphaAcum;
             color = RCPhong(coords, deltaDir, color) * alpha;
-            colorAcum = colorAcum + (1.0 - alphaAcum) * color;
+            colorAcum = colorAcum + (1.0 - alphaAcum) * ( color);
             //colorAcum = color + (1.0f - color) * colorAcum;
             if (alphaAcum >= 1.0f) {
                 alphaAcum = 1.0f;
@@ -121,5 +121,5 @@ void main (void) {
             break;
         }
     }
-    frag_color = vec4(colorAcum, alphaAcum);
+    frag_color = vec4(1.0f - colorAcum, alphaAcum);
 }
