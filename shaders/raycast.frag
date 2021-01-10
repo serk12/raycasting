@@ -23,6 +23,7 @@ out vec4 frag_color;
 uniform int size;
 uniform vec4[11] color;
 
+// transform alpha input to color from LUT
 vec4 alphaToColor(float a) {
     a *=  100;
     float aux = floor(a);
@@ -41,6 +42,7 @@ vec4 alphaToColor(float a) {
     return result;
 }
 
+// because we know the cube is fixed we can hardcore the function
 bool insideCube(vec3 coords) {
     return (coords.x <= 0.5f && coords.x >= -0.5f) &&
            (coords.y <= 0.5f && coords.y >= -0.5f) &&
@@ -55,6 +57,7 @@ vec3 Lambert(vec3 NormSCO, vec3 L, vec3 color)
     return (colRes);
 }
 
+// standar phon shading
 vec3 Phong(vec3 vert_norm, vec3 L, vec4 vert_pos, vec3 color)
 {
     vec3 colRes = Lambert (vert_norm, L, color);
@@ -70,6 +73,7 @@ vec3 Phong(vec3 vert_norm, vec3 L, vec4 vert_pos, vec3 color)
     return (colRes + color * colFocus * shine);
 }
 
+// phong shading for Ray casting, calculate N from neighbors
 vec3 RCPhong(vec3 coords, vec3 deltaDir, vec3 color) {
     vec3 ini = coords + deltaDir + vec3(0.5f);
     vec3 end = coords - deltaDir + vec3(0.5f);

@@ -12,8 +12,8 @@ smooth out vec4 pos;
 smooth out vec3 cam_pos;
 
 void main(void)  {
-    //calculate the camera position
     mat4 modelView = view * model;
+    //calculate the camera position
     mat4 iView = inverse(modelView);
     cam_pos = vec3(iView[3])/iView[3][3];
     init_coords = vert;
